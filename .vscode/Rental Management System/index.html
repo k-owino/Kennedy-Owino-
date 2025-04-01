@@ -1,0 +1,269 @@
+<?php
+include_once 'header.php';
+  include_once 'libs/counter.php';
+  include_once 'includes/database.inc.php';
+	 include('functions.php');
+	 if(!isLoggedIn()){//automatically redirect user to Login page, if he/she is not LOGGED IN
+	 	$_SESSION['msg']="You must login first";
+	 	header("Location: SignIn.php");
+	 }
+?>
+<style type="text/css">
+.title{
+  width: 1000px;
+  margin: 50px auto 0px;
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  border: 1px solid #B0C4DE;
+  border-bottom: none;
+  border-radius: 10px 10px 0px 0px;
+  padding: 20px;
+  }
+
+form{
+  width: 1000px;
+  height: 300px;
+  margin: 0px auto;
+  padding:20px;
+  border: 1px solid #B0C4DE;
+  background: white;
+  border-radius: 0px 0px 10px 10px;
+}
+
+/* Successful Log In Message*/
+.alert-success{
+  width: 1000px;
+  padding:0px 10px 0px 10px;
+  margin: 50px auto 0px;
+  text-align: center;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+/* The close button */
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
+}
+
+.userTools{
+  
+  margin-left: 620px;
+}
+</style>
+<script type="text/javascript">
+	function triggerClick(e){
+		document.querySelector('#profileImage').click();
+	}
+
+	function displayImage(e){
+		if(e.files[0]){
+			var reader= new FileReader();
+			reader.onload=function(e){
+				document.querySelector('#profileImage').setAttribute('src',e.target.result);
+			}
+			reader.readAsDataURL(e.files[0]);
+		}
+	}
+</script>
+<!----notification message--->
+  <?php if(isset($_SESSION['success'])):?>
+      <div class="alert-success">
+        <hr class="alert-success">
+          <span class="close alert-link" onclick="this.parentElement.style.display='none';">&times;</span>
+          <?php
+            echo $_SESSION['success'];
+            unset($_SESSION['success']);
+          ?>
+        </hr>
+      </div>
+    <?php endif ?>
+<div class="title bg-success">
+		<h2>Tenant Page</h2>
+</div>
+<form class=".form-inline" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="id" value="<?php echo $id; ?>">
+<div id="content-wrapper" class="d-flex flex-column">
+<div id="content">
+		 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4">
+      <!-- Nav Item - User Information -->
+          <?php
+                /*******************DISPLAY TENANT PROFILE PICTURE**********************************************************/
+                        $sql="SELECT * FROM tenants WHERE Username='".$_SESSION['username']."'";
+                        $pro=mysqli_query($conn,$sql);
+
+                        while($row=mysqli_fetch_assoc($pro)){
+                            if($row['image']==""){
+                               echo "<img class='img-profile rounded-circle' onClick='triggerClick()' id='profileDisplay' style='width:50px; height:50px;' src='image/default.jpg'/>";
+                             }else{
+                        
+                              echo "<img class='img-profile rounded-circle' onClick='triggerClick()' id='profileDisplay'  style='width:50px; height:50px;' src='image/".$row['image']."'/>";
+                   }
+                 } 
+               ?>   
+               <div class="topbar-divider d-none d-sm-block"></div>
+            <!---Fetch Tenant Name and House Number details from the Database---->
+                <?php
+                     $sql="SELECT * FROM (SELECT * FROM house) AS A JOIN (SELECT * FROM tenants WHERE Username='".$_SESSION['username']."') AS B ON A.house_id=B.house";
+                     $res=mysqli_query($conn,$sql) or die(mysqli_error($conn));
+          
+                     while($row=mysqli_fetch_array($res)){
+                          $firstname=$row['First_Name'];
+                          $lastname=$row['Last_Name'];
+                          $house=$row['house_number'];
+                          }
+                  echo '</table>';
+                  
+                      mysqli_close($conn);
+                 ?> 
+                 <!--------------------------------TENANT DETAILS------------------------------------------------------------>
+                 <div>
+                         <small class="mr-2 d-none d-lg-inline text-gray-600 small font-weight-bold" style="padding-left: 10px;">
+                            <b>Name:</b> <?php echo $firstname." ".$lastname;?>
+                         </small><br>
+                          <small class="mr-2 d-none d-lg-inline text-gray-600 small font-weight-bold" style="padding-left: 10px;">
+                            <b>House Number:</b> <?php echo $house;?>
+                         </small>
+                     </div>
+                <!--------------------------------------USER PROFILE AND LOGOUT ICONS----------------------------------------->
+                <div class="userTools">
+                  <span>
+                      <a href="system_user_profile.php">
+                        <i class="fas fa-user fa-b fa-fw mr-2 text-gray-600"></i>
+                      </a>
+                  </span>
+                  <span>
+                      <a href="..//SignIn.php" data-toggle="modal" data-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt fa-b fa-fw mr-2 text-gray-600"></i>
+                      </a>
+                  </span>
+                </div>
+        </nav>
+      </div>
+		<!-- End of Topbar -->
+
+
+        
+			<?php
+				//USER UPLOAD PROFILE PICTURE
+				  if(isset($_POST['profile'])){
+          move_uploaded_file($_FILES['profileImage']['tmp_name'],'image/'.$_FILES['profileImage']['name']);
+
+          $sql="UPDATE tenants SET image='".$_FILES['profileImage']['name']."' WHERE Username='".$_SESSION['username']."'";
+          mysqli_query($conn,$sql);
+        }
+			?>
+
+							
+<!-- Content Row -->
+<div class="row">
+<!-- Earnings (Monthly) Card Example -->
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card border-left-primary shadow h-100 py-2">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2">
+        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1"><a class="nav-link text-primary" href="services/houseApplication.php">House(s)</a></div>   
+        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php housenumber("house");?>
+        <img src="image/house.PNG.png" style="width: 40%;"><br/>
+         </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Earnings (Monthly) Card Example -->
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card border-left-success shadow h-100 py-2">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2">
+          <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><a class="nav-link text-success"  href="services/invoice_view.php">Invoice</a></div>
+          <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
+          <img src="image/invoice.jpg" style="width: 40%;">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Earnings (Monthly) Card Example -->
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card border-left-info shadow h-100 py-2">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2">
+          <div class="text-xs font-weight-bold text-info text-uppercase mb-1"> <a class="nav-link text-info" href="services/payment.php">Payment</a></div>
+          <div class="row no-gutters align-items-center">
+            <div class="col-auto">
+              <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"></div>
+              <img src="image/pay.png" style="width: 40%;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pending Requests Card Example -->
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card border-left-warning shadow h-100 py-2">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2">
+          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+          <a class="nav-link text-warning" href="services/balance.php">Rent Balance(s)</a>
+          </div>
+          <img src="image/caution.jpg" style="width: 40%;">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+                 <!-- /.row -->
+            <!-- /.row -->
+                
+            <!-- /.row -->
+            <!-- /.col-lg-8 -->
+            <!--row begins-->
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+<span aria-hidden="true">×</span>
+</button>
+</div>
+<div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+<a class="btn btn-primary" href="SignIn.php">Logout</a>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</form>
+<?php
+	include_once 'footer.php';
+?>

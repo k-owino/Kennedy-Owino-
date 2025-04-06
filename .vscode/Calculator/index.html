@@ -5,13 +5,13 @@
         <link type='stylesheet' href='style.css'>
     </head>
     <body>
-        <div id="calculator">
+        <div id="calc">
         <div id="content">
             <form>
                 <div id="output">
-                    <input type="text">
+                    <input type="text" id="result">
                 </div>
-                <div class="button">
+                <div class="btn">
                     <input type="button" value="Clear" onclick="Clear" id="clear">
                     <input type="button" value="?" onclick="Back()" id="backspace">
                     <input type="button" value="%" onclick="Solve('%')">
@@ -35,7 +35,7 @@
                     <input type="button" value="00" onclick="Solve('00')">
                     <input type="button" value="0" onclick="Solve('0')">
                     <input type="button" value="." onclick="Solve('.')">
-                    <input type="button" value="=" onclick="Result()" id="result">
+                    <input type="button" value="=" onclick="Result()">
                 </div>
             </form>
         </div>

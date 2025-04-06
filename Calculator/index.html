@@ -5,9 +5,9 @@
     </head>
     <body>
         <div id="calculator">
-        <div>
+        <div id="content">
             <form>
-                <div>
+                <div id="output">
                     <input type="text">
                 </div>
                 <div class="button">
@@ -34,7 +34,7 @@
                     <input type="button" value="00" onclick="Solve('00')">
                     <input type="button" value="0" onclick="Solve('0')">
                     <input type="button" value="." onclick="Solve('.')">
-                    <input type="button" value="=" onclick="Result()">
+                    <input type="button" value="=" onclick="Result()" id="result">
                 </div>
             </form>
         </div>

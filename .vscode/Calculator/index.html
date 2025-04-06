@@ -2,7 +2,7 @@
 <html lang="eng">
     <head>
         <title>Calculator Program</title>
-        <link type='stylesheet' href='style.css'>
+        <link rel='stylesheet' href='style.css'>
     </head>
     <body>
         <div id="calc">
@@ -12,8 +12,8 @@
                     <input type="text" id="res">
                 </div>
                 <div class="btn">
-                    <input type="button" value="Clear" onclick="Clear" id="clear">
-                    <input type="button" value="?" onclick="Back()" id="backspace">
+                    <input type="button" value="Clear" onclick="Clear()" id="clear">
+                    <input type="button" value="DEL" onclick="Back()" id="backspace">
                     <input type="button" value="%" onclick="Solve('%')">
                     <input type="button" value="/" onclick="Solve('/')">
                     <br>
@@ -40,7 +40,9 @@
             </form>
         </div>
         </div>
+        <script src="calc.js"></script>
     </body>
+    
     <footer>
     </footer>
 </html>
